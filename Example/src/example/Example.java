@@ -17,8 +17,8 @@ public class Example extends JFrame implements ActionListener, MouseListener {
     static Dimension sizeScreen = Toolkit.getDefaultToolkit().getScreenSize();
     static Graphics graphics;
 
-    byte rows, columns, numberLines, menuHeight, sec, min, sizeSimbol, top, bottom, left, right, fields[][];
-    short coordSimbolX, coordSimbolY, numberSteps, screenWidth, screenHeight, windowWidth, windowHeight, drawAreaX, drawAreaY, sizeSquareX, sizeSquareY, coordLineX, coordLineY, modX, modY;
+    byte rows, columns, numberLines, menuHeight, sec, min, sizeSimbol, top, bottom, left, right, currentSimbol, fields[][];
+    short coordSimbolX, coordSimbolY, numberSteps, screenWidth, screenHeight, windowWidth, windowHeight, drawAreaX, drawAreaY, sizeSquareX, sizeSquareY, coordLineX, coordLineY, modX, modY, sumX, sumY;
     boolean nextStepIsX, win;
     JMenuBar mb;
     JMenu mFile, mHelp, mNewGame;
@@ -33,22 +33,13 @@ public class Example extends JFrame implements ActionListener, MouseListener {
         createMenu();
 
         addMouseListener(this);
-        setDefaultCloseOperation(3);//EXIT_ON_CLOSE
-        setBackground(Color.red);
+        setDefaultCloseOperation(3);
         setResizable(false);
         setTitle("0:00");
         setVisible(true);
 
         variablesInit();
 
-        if ((windowHeight - top - bottom) != (windowWidth - left - right)) {
-            windowWidth = (short) (windowHeight - top - bottom + left + right);
-        }
-        drawAreaX = (short) (windowWidth - left - right);
-        drawAreaY = (short) (windowHeight - top - bottom - menuHeight);
-
-//        coordLineX = left;
-//        coordLineY = (short) (top + menuHeight);
         setLocation((screenWidth - windowWidth) >> 1, (screenHeight - windowHeight) >> 1);
         setSize(drawAreaX % numberLines == 0 ? ++windowWidth : windowWidth, drawAreaY % numberLines == 0 ? ++windowHeight : windowHeight);
         graphics = getGraphics();
@@ -107,24 +98,25 @@ public class Example extends JFrame implements ActionListener, MouseListener {
         min = 0;
         rows = 0;
         columns = 0;
-        numberLines = 17;
+        numberLines = 5;
         sizeSimbol = 0;
         coordSimbolX = 0;
         coordSimbolY = 0;
         numberSteps = 0;
+        currentSimbol = 0;
         nextStepIsX = true;
         win = false;
 
-        fields = new byte[numberLines + 5][numberLines + 5];
+        fields = new byte[numberLines + 8][numberLines + 8];
         for (byte i = 0; i < fields.length; i++) {
             for (byte j = 0; j < fields.length; j++) {
-                fields[i][j] = 0;//0 jelenti az ureset, 1 az X-et, 2 a O-t
+                fields[i][j] = 0;//0 ures, 1 X, 2 O
             }
         }
         screenWidth = (short) sizeScreen.width;
         screenHeight = (short) sizeScreen.height;
-        windowWidth = 608;
-        windowHeight = 631;
+        windowWidth = 600;
+        windowHeight = 600;
 
         top = (byte) getInsets().top;
         left = (byte) getInsets().left;
@@ -135,36 +127,45 @@ public class Example extends JFrame implements ActionListener, MouseListener {
 
         coordLineX = left;
         coordLineY = (short) (top + menuHeight);
+
+        if ((windowHeight - top - bottom - menuHeight) != (windowWidth - left - right)) {
+            windowWidth = (short) (windowHeight - top - bottom - menuHeight + left + right);
+        }
+
+        drawAreaX = (short) (windowWidth - left - right);
+        drawAreaY = (short) (windowHeight - top - bottom - menuHeight);
+
+        sumX = (short) (drawAreaX / numberLines);
+        sumY = (short) (drawAreaY / numberLines);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         boolean coordX0 = true, coordY0 = true;
-        short sumX = (short) (left + drawAreaX);
-        short sumY = (short) (top + drawAreaY);
         short varX = 0;
         short varY = 0;
+
         for (byte i = 0; i < numberLines && (coordX0 || coordY0); i++) {
-            if (e.getX() < (varX += sumX) / numberLines + left && coordX0) {
+            if (e.getX() < (varX += sumX) + left && coordX0) {
                 coordX0 = false;
                 columns = i;
-                coordSimbolX = (short) ((drawAreaX * (i + 1) / numberLines + left) - ((drawAreaX / numberLines) >> 1));
+                coordSimbolX = (short) ((sumX * (i + 1) + left) - (sumX >> 1));
             }
-            if (e.getY() < (varY += sumY) / numberLines + top && coordY0 && e.getY() > (top + menuHeight)) {
+            if (e.getY() < (varY += sumY) + top + menuHeight && coordY0 && e.getY() > (top + menuHeight)) {
                 coordY0 = false;
                 rows = i;
-                coordSimbolY = (short) ((drawAreaY * (i + 1) / numberLines + top) - ((drawAreaY / numberLines) >> 1) + menuHeight);
+                coordSimbolY = (short) ((sumY * (i + 1) + top + menuHeight) - (sumY >> 1));
             }
         }
-        if (fields[rows + 2][columns + 2] == 0 && !coordY0 && !coordX0) {
+        if (isEnabled(rows + 4, columns + 4) && !coordY0 && !coordX0) {
             drawSimbol(graphics, coordSimbolX, coordSimbolY);
+            stepAI();
         }
     }
 
     public void drawSimbol(Graphics g2, int x, int y) {
         Graphics2D g = (Graphics2D) g2;
         g.setStroke(new BasicStroke(3));
-        System.out.println("x= " + x + ", y= " + y);
         if (nextStepIsX) {
             g.setColor(Color.RED);
             g.drawOval(x - (sizeSimbol >> 1), y - (sizeSimbol >> 1), sizeSimbol, sizeSimbol);
@@ -173,21 +174,74 @@ public class Example extends JFrame implements ActionListener, MouseListener {
             g.drawLine(x - (sizeSimbol >> 1), y - (sizeSimbol >> 1), x + (sizeSimbol >> 1), y + (sizeSimbol >> 1));
             g.drawLine(x - (sizeSimbol >> 1), y + (sizeSimbol >> 1), x + (sizeSimbol >> 1), y - (sizeSimbol >> 1));
         }
-        fields[rows + 2][columns + 2] = (byte) ((nextStepIsX) ? 2 : 1);
+        currentSimbol = (byte) ((nextStepIsX) ? 2 : 1);
+        fields[rows + 4][columns + 4] = currentSimbol;//1 X, 2 O
         nextStepIsX = !nextStepIsX;
-        if (++numberSteps > 2) {
+        if (++numberSteps > (numberLines < 9 ? 4 : 8)) {
             winCheck();
         }
     }
 
     void winCheck() {
-        for (byte i = 2; i < 5 && !win; i++) {
-            for (byte j = 2; j < 5 && !win; j++) {
-                if (fields[i][j] != 0 && (fields[i][j] == fields[i - 1][j - 1] && fields[i][j] == fields[i + 1][j + 1] || fields[i][j] == fields[i - 1][j] && fields[i][j] == fields[i + 1][j] || fields[i][j] == fields[i][j - 1] && fields[i][j] == fields[i][j + 1])) {
-                    System.out.println("Win");
-                    win = true;
+
+        for (byte i = 4; i < numberLines + 4 && !win; i++) {
+            for (byte j = 4; j < numberLines + 4 && !win; j++) {
+//        for (byte i = (byte) rows - 2; i <= rows + 2 && !win; i++) {
+//            for (byte j = (byte) columns - 2; j <= columns + 2 && !win; j++) {//Optimalizalas, eleg lenne az aktualis lepes kornyezetet, szomszedait vizsgalni, mert ugyis csak akkor nyerhet hogy ahova rak, ott kijon valahogy az 5 egyforma
+                if (fields[i][j] == currentSimbol) {
+                    //tictactoe
+                    if (numberLines < 9) {
+                        if (fields[i][j] == fields[i][j - 1] && fields[i][j] == fields[i][j + 1]
+                                || fields[i][j] == fields[i - 1][j] && fields[i][j] == fields[i + 1][j]
+                                || fields[i][j] == fields[i - 1][j - 1] && fields[i][j] == fields[i + 1][j + 1]
+                                || fields[i][j] == fields[i - 1][j + 1] && fields[i][j] == fields[i + 1][j - 1]) {
+                            JOptionPane.showMessageDialog(rootPane, (currentSimbol == 1 ? "X" : "O") + " nyertel!", "A jatek veget ert.", JOptionPane.PLAIN_MESSAGE);
+                            win = true;
+                        }
+                    } //gomoku
+                    else {
+                        if (rootPaneCheckingEnabled) {
+                            if (fields[i][j] == fields[i][j - 1] && fields[i][j] == fields[i][j + 1]
+                                    && fields[i][j] == fields[i][j - 2] && fields[i][j] == fields[i][j + 2]
+                                    || fields[i][j] == fields[i - 1][j] && fields[i][j] == fields[i + 1][j]
+                                    && fields[i][j] == fields[i - 2][j] && fields[i][j] == fields[i + 2][j]
+                                    || fields[i][j] == fields[i - 1][j - 1] && fields[i][j] == fields[i + 1][j + 1]
+                                    && fields[i][j] == fields[i - 2][j - 2] && fields[i][j] == fields[i + 2][j + 2]
+                                    || fields[i][j] == fields[i - 1][j + 1] && fields[i][j] == fields[i + 1][j - 1]
+                                    && fields[i][j] == fields[i - 2][j + 2] && fields[i][j] == fields[i + 2][j - 2]) {
+                                JOptionPane.showMessageDialog(rootPane, (currentSimbol == 1 ? "X" : "O") + " nyertel!", "A jatek veget ert.", JOptionPane.PLAIN_MESSAGE);
+                                win = true;
+                            }
+                        }
+                    }
                 }
             }
+        }
+        if (win) {
+            newGame(numberLines);
+        }
+    }
+
+    void stepAI() {
+        boolean AI = true;
+        int i=0,j=0;
+        for (byte b = 4; b < fields.length - 4 && AI; b++) {
+            for (byte c = 4; c < fields.length - 4 && AI; c++) {
+                if (fields[b][c] == 0) {
+                    fields[b][c] = 2;//O, mert a jatekos van az X-el
+                    coordSimbolX = (short) ((b - 3) * sumX + left - (sumX >> 1));
+                    coordSimbolY = (short) ((c - 3) * sumY + top + menuHeight - (sumY >> 1));
+                    i=b;
+                    j=c;
+                    System.out.println("b= " + b + ", c= " + c);
+                    AI = false;
+                }
+            }
+        }
+        System.out.println("sumX= " + sumX + ", sumY= " + sumY);
+        System.out.println("coordSimbolX= " + coordSimbolX + ", coordSimbolY= " + coordSimbolY);
+        if (isEnabled(i, j)) {
+            drawSimbol(graphics, coordSimbolX, coordSimbolY);
         }
     }
 
@@ -216,12 +270,12 @@ public class Example extends JFrame implements ActionListener, MouseListener {
             min = (sec != 0 ? min : ++min);
         } else if (e.getSource() != timer) {
             if (e.getSource() == miTicTacToe) {
-                newGame((byte)3);
+                newGame((byte) 3);
             } else if (e.getSource() == miOther) {
-                newGame((byte)5);
+                newGame((byte) 5);
             } else if (e.getSource() == miCustom) {
                 //Open new Windows
-                newGame((byte)9);
+                newGame((byte) 9);
             } else if (e.getSource() == miAbout) {
                 //Open new Windows
             } else if (e.getSource() == miExit) {
@@ -252,6 +306,10 @@ public class Example extends JFrame implements ActionListener, MouseListener {
             startTime = System.currentTimeMillis();
         }
         drawBoard();
+    }
+
+    boolean isEnabled(int a, int b) {
+        return fields[a][b] == 0;
     }
 
     public static void main(String[] args) {
