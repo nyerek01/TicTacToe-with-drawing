@@ -1,5 +1,5 @@
         /*      GOMOKU
-        
+
  Aktualis allas szamontartasa, pl.: 3-1, az eredmenyhez tartozo pont(ozasi)rendszer kidolgosasa.
  Perzisztens adattarolas (XML).
  A gepnek legyen valaszthato tudasszintje, akar randomtol kezdve a tokeletes strategia megvalositasaig.
@@ -8,29 +8,35 @@
  */
 package example;
 
+import static example.Menu.*;
+import static example.InitVar.*;
+import static example.Board.*;
+import static example.Simbol.*;
+import static example.StepLogic.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 public class Example extends JFrame implements ActionListener, MouseListener {
 
-    static Dimension sizeScreen = Toolkit.getDefaultToolkit().getScreenSize();
+    static final Dimension sizeScreen = Toolkit.getDefaultToolkit().getScreenSize();
     static Graphics graphics;
-
-    byte rows, columns, numberLines, menuHeight, sec, min, sizeSimbol, top, bottom, left, right, currentSimbol, fields[][];
-    short coordSimbolX, coordSimbolY, numberSteps, screenWidth, screenHeight, windowWidth, windowHeight, drawAreaX, drawAreaY, sizeSquareX, sizeSquareY, coordLineX, coordLineY, modX, modY, sumX, sumY;
-    boolean nextStepIsX, win;
-    JMenuBar mb;
-    JMenu mFile, mHelp, mNewGame;
-    JMenuItem miExit, miAbout, miTicTacToe, miOther, miCustom;
-    Timer timer, t;
-    long startTime, stopTime;
+    static byte rows, columns, menuHeight, sec, min, currentSimbol, top, bottom, left, right, fields[][];
+    static short numberSteps, screenWidth, screenHeight, windowWidth, windowHeight, drawAreaX, drawAreaY, coordLineX, coordLineY, sumX, sumY;
+    static boolean nextStepIsX;
+    static JMenuBar mb;
+    static JMenu mFile, mHelp, mNewGame;
+    static JMenuItem miExit, miAbout, miTicTacToe, miOther, miCustom;
+    static Timer timer, t;
+    static long startTime, stopTime;
+    static Example e;
 
     public Example() {
 
         setLayout(null);
 
-        createMenu();
+        addMenu();
 
         addMouseListener(this);
         setDefaultCloseOperation(3);
@@ -38,44 +44,16 @@ public class Example extends JFrame implements ActionListener, MouseListener {
         setTitle("0:00");
         setVisible(true);
 
-        variablesInit();
+        varInit();
 
         setLocation((screenWidth - windowWidth) >> 1, (screenHeight - windowHeight) >> 1);
-        setSize(drawAreaX % numberLines == 0 ? ++windowWidth : windowWidth, drawAreaY % numberLines == 0 ? ++windowHeight : windowHeight);
+        setSize(windowWidth, windowHeight);
         graphics = getGraphics();
-        t = new Timer(1000, this);
-        timer = new Timer(25, this);
-        t.restart();
-        timer.restart();
-//        drawBoard();//Nem rajzolja ki a tablat
+
     }
 
-    void createMenu() {
-
-        mb = new JMenuBar();
-
-        mFile = new JMenu("File");
-        mHelp = new JMenu("Help");
-        mNewGame = new JMenu("New Game");
-
-        mb.add(mFile);
-        mb.add(mHelp);
-
-        miExit = new JMenuItem("Exit");
-        miAbout = new JMenuItem("About");
-
-        miTicTacToe = new JMenuItem("TicTacToe");
-        miOther = new JMenuItem("Other");
-        miCustom = new JMenuItem("Custom");
-
-        mFile.add(mNewGame);
-
-        mNewGame.add(miTicTacToe);
-        mNewGame.add(miOther);
-        mNewGame.add(miCustom);
-
-        mFile.add(miExit);
-        mHelp.add(miAbout);
+    private void addMenu() {
+        createMenu();
 
         mFile.addActionListener(this);
         mHelp.addActionListener(this);
@@ -90,33 +68,12 @@ public class Example extends JFrame implements ActionListener, MouseListener {
         setJMenuBar(mb);
     }
 
-    void variablesInit() {
+    private void varInit() {
 
-        startTime = 0;
-        stopTime = 0;
-        sec = 0;
-        min = 0;
-        rows = 0;
-        columns = 0;
-        numberLines = 5;
-        sizeSimbol = 0;
-        coordSimbolX = 0;
-        coordSimbolY = 0;
-        numberSteps = 0;
-        currentSimbol = 0;
-        nextStepIsX = true;
-        win = false;
+        t = new Timer(1000, this);
+        timer = new Timer(25, this);
 
-        fields = new byte[numberLines + 8][numberLines + 8];
-        for (byte i = 0; i < fields.length; i++) {
-            for (byte j = 0; j < fields.length; j++) {
-                fields[i][j] = 0;//0 ures, 1 X, 2 O
-            }
-        }
-        screenWidth = (short) sizeScreen.width;
-        screenHeight = (short) sizeScreen.height;
-        windowWidth = 600;
-        windowHeight = 600;
+        initVar();
 
         top = (byte) getInsets().top;
         left = (byte) getInsets().left;
@@ -137,10 +94,11 @@ public class Example extends JFrame implements ActionListener, MouseListener {
 
         sumX = (short) (drawAreaX / numberLines);
         sumY = (short) (drawAreaY / numberLines);
+
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent e) {//Lehet hogy nem az egesz logika kene ide, ki lehetne szervezni?
         boolean coordX0 = true, coordY0 = true;
         short varX = 0;
         short varY = 0;
@@ -160,105 +118,6 @@ public class Example extends JFrame implements ActionListener, MouseListener {
         if (isEnabled(rows + 4, columns + 4) && !coordY0 && !coordX0) {
             drawSimbol(graphics, coordSimbolX, coordSimbolY);
             stepAI();
-        }
-    }
-
-    public void drawSimbol(Graphics g2, int x, int y) {
-        Graphics2D g = (Graphics2D) g2;
-        g.setStroke(new BasicStroke(3));
-        if (nextStepIsX) {
-            g.setColor(Color.RED);
-            g.drawOval(x - (sizeSimbol >> 1), y - (sizeSimbol >> 1), sizeSimbol, sizeSimbol);
-        } else {
-            g.setColor(Color.BLACK);
-            g.drawLine(x - (sizeSimbol >> 1), y - (sizeSimbol >> 1), x + (sizeSimbol >> 1), y + (sizeSimbol >> 1));
-            g.drawLine(x - (sizeSimbol >> 1), y + (sizeSimbol >> 1), x + (sizeSimbol >> 1), y - (sizeSimbol >> 1));
-        }
-        currentSimbol = (byte) ((nextStepIsX) ? 2 : 1);
-        fields[rows + 4][columns + 4] = currentSimbol;//1 X, 2 O
-        nextStepIsX = !nextStepIsX;
-        if (++numberSteps > (numberLines < 9 ? 4 : 8)) {
-            winCheck();
-        }
-    }
-
-    void winCheck() {
-
-        for (byte i = 4; i < numberLines + 4 && !win; i++) {
-            for (byte j = 4; j < numberLines + 4 && !win; j++) {
-//        for (byte i = (byte) rows - 2; i <= rows + 2 && !win; i++) {
-//            for (byte j = (byte) columns - 2; j <= columns + 2 && !win; j++) {//Optimalizalas, eleg lenne az aktualis lepes kornyezetet, szomszedait vizsgalni, mert ugyis csak akkor nyerhet hogy ahova rak, ott kijon valahogy az 5 egyforma
-                if (fields[i][j] == currentSimbol) {
-                    //tictactoe
-                    if (numberLines < 9) {
-                        if (fields[i][j] == fields[i][j - 1] && fields[i][j] == fields[i][j + 1]
-                                || fields[i][j] == fields[i - 1][j] && fields[i][j] == fields[i + 1][j]
-                                || fields[i][j] == fields[i - 1][j - 1] && fields[i][j] == fields[i + 1][j + 1]
-                                || fields[i][j] == fields[i - 1][j + 1] && fields[i][j] == fields[i + 1][j - 1]) {
-                            JOptionPane.showMessageDialog(rootPane, (currentSimbol == 1 ? "X" : "O") + " nyertel!", "A jatek veget ert.", JOptionPane.PLAIN_MESSAGE);
-                            win = true;
-                        }
-                    } //gomoku
-                    else {
-                        if (rootPaneCheckingEnabled) {
-                            if (fields[i][j] == fields[i][j - 1] && fields[i][j] == fields[i][j + 1]
-                                    && fields[i][j] == fields[i][j - 2] && fields[i][j] == fields[i][j + 2]
-                                    || fields[i][j] == fields[i - 1][j] && fields[i][j] == fields[i + 1][j]
-                                    && fields[i][j] == fields[i - 2][j] && fields[i][j] == fields[i + 2][j]
-                                    || fields[i][j] == fields[i - 1][j - 1] && fields[i][j] == fields[i + 1][j + 1]
-                                    && fields[i][j] == fields[i - 2][j - 2] && fields[i][j] == fields[i + 2][j + 2]
-                                    || fields[i][j] == fields[i - 1][j + 1] && fields[i][j] == fields[i + 1][j - 1]
-                                    && fields[i][j] == fields[i - 2][j + 2] && fields[i][j] == fields[i + 2][j - 2]) {
-                                JOptionPane.showMessageDialog(rootPane, (currentSimbol == 1 ? "X" : "O") + " nyertel!", "A jatek veget ert.", JOptionPane.PLAIN_MESSAGE);
-                                win = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (win) {
-            newGame(numberLines);
-        }
-    }
-
-    void stepAI() {
-        boolean AI = true;
-        int i=0,j=0;
-        for (byte b = 4; b < fields.length - 4 && AI; b++) {
-            for (byte c = 4; c < fields.length - 4 && AI; c++) {
-                if (fields[b][c] == 0) {
-                    fields[b][c] = 2;//O, mert a jatekos van az X-el
-                    coordSimbolX = (short) ((b - 3) * sumX + left - (sumX >> 1));
-                    coordSimbolY = (short) ((c - 3) * sumY + top + menuHeight - (sumY >> 1));
-                    i=b;
-                    j=c;
-                    System.out.println("b= " + b + ", c= " + c);
-                    AI = false;
-                }
-            }
-        }
-        System.out.println("sumX= " + sumX + ", sumY= " + sumY);
-        System.out.println("coordSimbolX= " + coordSimbolX + ", coordSimbolY= " + coordSimbolY);
-        if (isEnabled(i, j)) {
-            drawSimbol(graphics, coordSimbolX, coordSimbolY);
-        }
-    }
-
-    private void drawBoard() {
-
-        sizeSquareX = (short) (drawAreaX / numberLines);
-        modX = (short) (drawAreaX % numberLines);
-        sizeSquareY = (short) (drawAreaY / numberLines);
-        modY = (short) (drawAreaY % numberLines);
-        sizeSimbol = (byte) (sizeSquareX >> 1);
-
-        Graphics2D g2 = (Graphics2D) graphics;
-        g2.setStroke(new BasicStroke(1));
-        g2.setColor(Color.BLACK);
-        for (byte i = 1; i < numberLines; i++) {
-            g2.drawLine(coordLineX += sizeSquareX, top + menuHeight, coordLineX, windowHeight - bottom);
-            g2.drawLine(left, coordLineY += sizeSquareY, drawAreaX, coordLineY);
         }
     }
 
@@ -289,7 +148,7 @@ public class Example extends JFrame implements ActionListener, MouseListener {
     }
 
     void newGame(byte a) {
-        variablesInit();
+        varInit();
         setNumberLines(a);
         setTitle("0:00");
         update(graphics);
@@ -313,10 +172,7 @@ public class Example extends JFrame implements ActionListener, MouseListener {
     }
 
     public static void main(String[] args) {
-        Example e = new Example();
-//        System.out.println("o= " + EnumSimbols.o);
-//        System.out.println("state = " + EnumStates.playing);
-//        e.drawBoard();//Nem rajzolja ki a tablat
+        e = new Example();
     }
 
     @Override
@@ -336,7 +192,7 @@ public class Example extends JFrame implements ActionListener, MouseListener {
     }
 
     void setNumberLines(byte a) {
-        this.numberLines = a;
+        numberLines = a;
     }
 
 }
