@@ -115,7 +115,8 @@ public class Example extends JFrame implements ActionListener, MouseListener {
                 coordSimbolY = (short) ((sumY * (i + 1) + top + menuHeight) - (sumY >> 1));
             }
         }
-        if (isEnabled(rows + 4, columns + 4) && !coordY0 && !coordX0) {
+        System.out.println("MyStep, row = " + rows + ", column = " + columns);
+        if (isEnabled(rows, columns) && !coordY0 && !coordX0) {
             drawSimbol(graphics, coordSimbolX, coordSimbolY);
             stepAI();
         }
@@ -167,7 +168,8 @@ public class Example extends JFrame implements ActionListener, MouseListener {
         drawBoard();
     }
 
-    boolean isEnabled(int a, int b) {
+    static boolean isEnabled(int a, int b) {
+        System.out.println("isEnabled = " + (fields[a][b] == 0));
         return fields[a][b] == 0;
     }
 

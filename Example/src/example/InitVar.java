@@ -25,7 +25,7 @@ public class InitVar {
         nextStepIsX = true;
         win = false;
 
-        fields = new byte[numberLines + 8][numberLines + 8];
+        fields = new byte[numberLines][numberLines];
         for (byte i = 0; i < fields.length; i++) {
             for (byte j = 0; j < fields.length; j++) {
                 fields[i][j] = 0;//0 ures, 1 X, 2 O
