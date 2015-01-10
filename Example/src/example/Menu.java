@@ -1,10 +1,12 @@
 package example;
 
-import static example.Example.*;
-
 import javax.swing.*;
 
 public class Menu {
+
+    static JMenuBar mb;
+    static JMenu mFile, mHelp, mNewGame;
+    static JMenuItem miExit, miAbout, miTicTacToe, miOther, miCustom;
 
     static void createMenu() {
 

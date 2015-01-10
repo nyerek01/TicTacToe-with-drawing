@@ -3,8 +3,6 @@ package example;
 import static example.Example.*;
 import static example.Simbol.*;
 import static example.Board.*;
-import static example.WinCheck.*;
-import javax.swing.Timer;
 
 public class InitVar {
 
@@ -16,16 +14,16 @@ public class InitVar {
         min = 0;
         rows = 0;
         columns = 0;
-        numberLines = 5;
-        sizeSimbol = 0;
-        coordSimbolX = 0;
-        coordSimbolY = 0;
+        setNumberLines((byte) 5);
+        setSizeSimbol((byte) 0);
+        setCoordSimbolX((byte) 0);
+        setCoordSimbolY((byte) 0);
         numberSteps = 0;
         currentSimbol = 0;
-        nextStepIsX = true;
-        win = false;
+        setNextStepIsX(true);
+        WinCheck.setWin(false);
 
-        fields = new byte[numberLines][numberLines];
+        fields = new byte[getNumberLines()][getNumberLines()];//Elvileg letrehozaskor a tomb 0 ertekekkel van feltoltve, de ez a biztosabb
         for (byte i = 0; i < fields.length; i++) {
             for (byte j = 0; j < fields.length; j++) {
                 fields[i][j] = 0;//0 ures, 1 X, 2 O

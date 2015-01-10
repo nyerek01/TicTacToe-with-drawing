@@ -1,10 +1,20 @@
 package example;
 
-import static example.Simbol.*;
-
 public class Converter {
 
-    static void Convert() {
-        drawSimbol(Example.graphics, sizeSimbol, sizeSimbol);
+    static byte conPixToRow(int y) {//convertYPixelToRow
+        return (byte) ((y - Example.getCoordLineY()) / Board.getSizeSquareY());
+    }
+
+    static byte conPixToCol(int x) {//convertXPixelToColumn
+        return (byte) ((x - Example.getCoordLineX()) / Board.getSizeSquareX());
+    }
+
+    static short conRowToPix(byte r) {//convertRowToPixel
+        return (short) (r * Board.getSizeSquareY() + Example.getCoordLineY());
+    }
+
+    static short conColToPix(byte c) {//convertColumnToPixel
+        return (short) (c * Board.getSizeSquareX() + Example.getCoordLineX());
     }
 }

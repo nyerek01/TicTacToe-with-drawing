@@ -9,10 +9,7 @@
 package example;
 
 import static example.Menu.*;
-import static example.InitVar.*;
 import static example.Board.*;
-import static example.Simbol.*;
-import static example.StepLogic.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,15 +18,13 @@ import javax.swing.*;
 public class Example extends JFrame implements ActionListener, MouseListener {
 
     static final Dimension sizeScreen = Toolkit.getDefaultToolkit().getScreenSize();
-    static Graphics graphics;
-    static byte rows, columns, menuHeight, sec, min, currentSimbol, top, bottom, left, right, fields[][];
-    static short numberSteps, screenWidth, screenHeight, windowWidth, windowHeight, drawAreaX, drawAreaY, coordLineX, coordLineY, sumX, sumY;
-    static boolean nextStepIsX;
-    static JMenuBar mb;
-    static JMenu mFile, mHelp, mNewGame;
-    static JMenuItem miExit, miAbout, miTicTacToe, miOther, miCustom;
     static Timer timer, t;
+    private static short coordLineX, coordLineY;
     static long startTime, stopTime;
+    private static Graphics2D graphics;
+
+    static byte rows, columns, menuHeight, sec, min, currentSimbol, top, bottom, left, right, fields[][];
+    static short numberSteps, screenWidth, screenHeight, windowWidth, windowHeight, drawAreaX, drawAreaY, sumX, sumY;
     static Example e;
 
     public Example() {
@@ -48,8 +43,7 @@ public class Example extends JFrame implements ActionListener, MouseListener {
 
         setLocation((screenWidth - windowWidth) >> 1, (screenHeight - windowHeight) >> 1);
         setSize(windowWidth, windowHeight);
-        graphics = getGraphics();
-
+        graphics = (Graphics2D) getGraphics();
     }
 
     private void addMenu() {
@@ -71,9 +65,9 @@ public class Example extends JFrame implements ActionListener, MouseListener {
     private void varInit() {
 
         t = new Timer(1000, this);
-        timer = new Timer(25, this);
+        timer = new Timer(35, this);
 
-        initVar();
+        InitVar.initVar();
 
         top = (byte) getInsets().top;
         left = (byte) getInsets().left;
@@ -91,34 +85,23 @@ public class Example extends JFrame implements ActionListener, MouseListener {
 
         drawAreaX = (short) (windowWidth - left - right);
         drawAreaY = (short) (windowHeight - top - bottom - menuHeight);
-
-        sumX = (short) (drawAreaX / numberLines);
-        sumY = (short) (drawAreaY / numberLines);
-
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {//Lehet hogy nem az egesz logika kene ide, ki lehetne szervezni?
-        boolean coordX0 = true, coordY0 = true;
-        short varX = 0;
-        short varY = 0;
+    public void mouseReleased(MouseEvent e) {
 
-        for (byte i = 0; i < numberLines && (coordX0 || coordY0); i++) {
-            if (e.getX() < (varX += sumX) + left && coordX0) {
-                coordX0 = false;
-                columns = i;
-                coordSimbolX = (short) ((sumX * (i + 1) + left) - (sumX >> 1));
-            }
-            if (e.getY() < (varY += sumY) + top + menuHeight && coordY0 && e.getY() > (top + menuHeight)) {
-                coordY0 = false;
-                rows = i;
-                coordSimbolY = (short) ((sumY * (i + 1) + top + menuHeight) - (sumY >> 1));
-            }
-        }
+        columns = Converter.conPixToCol(e.getX());
+        Simbol.setCoordSimbolX(Converter.conColToPix(columns));
+
+        rows = Converter.conPixToRow(e.getY());
+        Simbol.setCoordSimbolY(Converter.conRowToPix(rows));
+
         System.out.println("MyStep, row = " + rows + ", column = " + columns);
-        if (isEnabled(rows, columns) && !coordY0 && !coordX0) {
-            drawSimbol(graphics, coordSimbolX, coordSimbolY);
-            stepAI();
+        System.out.println("Coords: x = " + Simbol.getCoordSimbolX() + ", y = " + Simbol.getCoordSimbolY());
+
+        if (isEnabled(rows, columns)) {
+            Simbol.drawSimbol(graphics, Simbol.getCoordSimbolX(), Simbol.getCoordSimbolY());
+            StepLogic.stepAI();
         }
     }
 
@@ -156,21 +139,28 @@ public class Example extends JFrame implements ActionListener, MouseListener {
         drawBoard();
     }
 
-    void b() {
-        stopTime = System.currentTimeMillis() + 500;
-        tabla();
-    }
-
-    void tabla() {
-        while (startTime != stopTime) {
-            startTime = System.currentTimeMillis();
-        }
-        drawBoard();
-    }
-
     static boolean isEnabled(int a, int b) {
-        System.out.println("isEnabled = " + (fields[a][b] == 0));
         return fields[a][b] == 0;
+    }
+
+    static Graphics2D getGraphic() {
+        return graphics;
+    }
+
+    public static short getCoordLineX() {
+        return coordLineX;
+    }
+
+    public static void setCoordLineX(short x) {
+        coordLineX = x;
+    }
+
+    public static short getCoordLineY() {
+        return coordLineY;
+    }
+
+    public static void setCoordLineY(short y) {
+        coordLineY = y;
     }
 
     public static void main(String[] args) {
@@ -193,8 +183,7 @@ public class Example extends JFrame implements ActionListener, MouseListener {
     public void mouseExited(MouseEvent e) {
     }
 
-    void setNumberLines(byte a) {
-        numberLines = a;
-    }
-
+//    void setNumberLines(byte a) {
+//        numberLines = a;
+//    }
 }
