@@ -1,39 +1,52 @@
 package example;
 
-import static example.Example.*;
 import static example.Simbol.*;
-import static example.Board.*;
+import static example.Game.*;
+import static example.GUI.*;
+import java.util.*;
 
-public class InitVar {
+public class InitVar implements Interface {
 
-    static void initVar() {
+    static void initVar(byte n) {
 
-        startTime = 0;
-        stopTime = 0;
-        sec = 0;
-        min = 0;
-        rows = 0;
-        columns = 0;
-        setNumberLines((byte) 5);
+        setSec(0);
+        setMin(0);
+//        setRows(4);
+        b.setRows(4);
+//        setColumns(4);
+        b.setColumns(4);
+        setStopTime(0);
+        setStartTime(0);
+//        setNumberSteps(0);
+        b.setNumberSteps(0);
+        setWindowWidth(600);
+        setWindowHeight(600);
+        setScreenWidth(sizeScreen.width);
+        setScreenHeight(sizeScreen.height);
+
+//        setNumberLines(n);
+        b.setNumberLines(n);
+        setNextStepIsX(false);
+        WinCheck.setWin(false);
         setSizeSimbol((byte) 0);
         setCoordSimbolX((byte) 0);
         setCoordSimbolY((byte) 0);
-        numberSteps = 0;
-        currentSimbol = 0;
-        setNextStepIsX(true);
-        WinCheck.setWin(false);
+        setCurrentSimbol((byte) 0);
 
-        fields = new byte[getNumberLines()][getNumberLines()];//Elvileg letrehozaskor a tomb 0 ertekekkel van feltoltve, de ez a biztosabb
-        for (byte i = 0; i < fields.length; i++) {
-            for (byte j = 0; j < fields.length; j++) {
-                fields[i][j] = 0;//0 ures, 1 X, 2 O
+        byte nL = b.getNumberLines();//Csak egyszer kell elkerni az adatot, kevesebb eroforras
+        byte nLP8 = (byte) (nL + 8);
+        byte[][] tempFields = new byte[nLP8][nLP8];
+        ArrayList<String> tempEmpty = new ArrayList<>(nL * nL);
+
+        for (byte i = 0; i < nLP8; i++) {
+            for (byte j = 0; j < nLP8; j++) {
+                tempFields[i][j] = 0;//0 ures, 1 X, 2 O
+                if (i < nL && j < nL) {
+                    tempEmpty.add(nL * i + j, "" + (nL * i + j));//Elejen az osszes mezo ures, majd lepesenkent csokken a szamuk
+                }
             }
         }
-        screenWidth = (short) sizeScreen.width;
-        screenHeight = (short) sizeScreen.height;
-        windowWidth = 600;
-        windowHeight = 600;
-        t.restart();
-        timer.restart();
+        b.setFields(tempFields);
+        b.setEmptyFields(tempEmpty);
     }
 }

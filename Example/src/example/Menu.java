@@ -1,38 +1,29 @@
 package example;
 
-import javax.swing.*;
-
-public class Menu {
-
-    static JMenuBar mb;
-    static JMenu mFile, mHelp, mNewGame;
-    static JMenuItem miExit, miAbout, miTicTacToe, miOther, miCustom;
+public class Menu implements Interface {
 
     static void createMenu() {
 
-        mb = new JMenuBar();
-
-        mFile = new JMenu("File");
-        mHelp = new JMenu("Help");
-        mNewGame = new JMenu("New Game");
-
         mb.add(mFile);
+        mb.add(mSettings);
         mb.add(mHelp);
 
-        miExit = new JMenuItem("Exit");
-        miAbout = new JMenuItem("About");
-
-        miTicTacToe = new JMenuItem("TicTacToe");
-        miOther = new JMenuItem("Other");
-        miCustom = new JMenuItem("Custom");
-
+        mFile.add(miUnDo);
+        mFile.add(miSave);
         mFile.add(mNewGame);
+        mFile.addSeparator();
+        mFile.add(miExit);
 
+        mNewGame.add(miReStart);
         mNewGame.add(miTicTacToe);
-        mNewGame.add(miOther);
+        mNewGame.add(miGomoku);
+        mNewGame.addSeparator();
         mNewGame.add(miCustom);
 
-        mFile.add(miExit);
+        mSettings.add(miOptions);
+
+        mHelp.add(miHelp);
+        mHelp.add(miCheckUpdates);
         mHelp.add(miAbout);
     }
 

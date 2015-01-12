@@ -1,52 +1,127 @@
 package example;
 
-import static example.Example.*;
+import static example.GUI.*;
+import static example.Simbol.*;
 
 import java.awt.*;
+import java.util.*;
 
-public class Board {
+public class Board implements Interface {
 
-    private static byte numberLines;
-    private static short sizeSquareX, sizeSquareY;
+    private byte rows, columns, numberLines = 5, fields[][] = new byte[numberLines][numberLines];
+    private short numberSteps, sizeSquareX, sizeSquareY, drawAreaX, drawAreaY;
+    private ArrayList<String> emptyFields;
 
-    static void drawBoard() {
+    Board() {
+//Parameter? pl.: numberLines
+    }
+
+    void drawBoard() {
 
         sizeSquareX = (short) (drawAreaX / numberLines);
         sizeSquareY = (short) (drawAreaY / numberLines);
-        Simbol.setSizeSimbol((short) (sizeSquareX >> 1));//Bitmuvelet gyorsabb mint az aritmetikai szorzas, osztas.
+        setSizeSimbol((short) (sizeSquareX * perCent));//Bitmuvelet gyorsabb mint az aritmetikai szorzas, osztas.
 
-        Graphics2D g2 = Example.getGraphic();
+        Graphics2D g2 = GUI.getGraphic();
 
         g2.setStroke(new BasicStroke(1));
         g2.setColor(Color.BLACK);
 
-        short yStart = getCoordLineY();//Nem szukseges valtozok, de elvileg optimalisabb nem a ciklusban szamoltatni, igy csak egyszer ertekelodik ki
-        short yStop = (short) (windowHeight - bottom);//memoriabol tobbet (+4 Byte), procibol kevesebbet hasznal.
+        short yStart = getCoordLineY();
+        short yStop = (short) (getWindowHeight() - getBottom());//memoriabol tobbet (+4 Byte), procibol kevesebbet hasznal.
 
         for (byte i = 1; i < numberLines; i++) {
             setCoordLineX((short) (getCoordLineX() + sizeSquareX));
             setCoordLineY((short) (getCoordLineY() + sizeSquareY));
 
             g2.drawLine(getCoordLineX(), yStart, getCoordLineX(), yStop);//Vertical Lines
-            g2.drawLine(left, getCoordLineY(), drawAreaX, getCoordLineY());//Horizontal Lines
+            g2.drawLine(getLeft(), getCoordLineY(), drawAreaX, getCoordLineY());//Horizontal Lines
         }
-        setCoordLineX(left);
-        setCoordLineY((short) (top + menuHeight));
+        setCoordLineX(getLeft());
+        setCoordLineY((short) (getTop() + getMenuHeight()));
     }
 
-    static byte getNumberLines() {
+    byte getNumberLines() {
         return numberLines;
     }
 
-    static void setNumberLines(byte n) {
+    void setNumberLines(byte n) {
         numberLines = n;
     }
 
-    static short getSizeSquareX() {
+    short getSizeSquareX() {
         return sizeSquareX;
     }
 
-    static short getSizeSquareY() {
+    short getSizeSquareY() {
         return sizeSquareY;
+    }
+
+    ArrayList<String> getEmptyFields() {
+        return emptyFields;
+    }
+
+    void setEmptyFields(ArrayList<String> e) {
+        emptyFields = e;
+    }
+
+    boolean isEnabled(int a, int b) {
+        return fields[a][b] == 0;
+    }
+
+    byte[][] getFields() {
+        return fields;
+    }
+
+    void setFields(byte[][] f) {
+        fields = f;
+    }
+
+    void setFields(byte r, byte c, byte v) {
+        fields[r][c] = v;
+    }
+
+    short getDrawAreaX() {
+        return drawAreaX;
+    }
+
+    void setDrawAreaX(short d) {
+        drawAreaX = d;
+    }
+
+    short getDrawAreaY() {
+        return drawAreaY;
+    }
+
+    void setDrawAreaY(short d) {
+        drawAreaY = d;
+    }
+
+    public byte getRows() {
+        return rows;
+    }
+
+    void setRows(int r) {
+        rows = (byte) r;
+    }
+
+    byte getColumns() {
+        return columns;
+    }
+
+    void setColumns(int c) {
+        columns = (byte) c;
+    }
+
+    short getNumberSteps() {
+        return numberSteps;
+    }
+
+    void setNumberSteps(int n) {
+        numberSteps = (short) n;
+    }
+
+    void increaseNumberSteps() {
+        numberSteps++;
     }
 }
