@@ -4,6 +4,7 @@ import static example.Game.*;
 import static example.MinSteps.*;
 
 import java.awt.*;
+import javax.swing.*;
 
 public class Simbol {
 
@@ -11,8 +12,10 @@ public class Simbol {
     private static Simbols X, O, Z;
     private static short sizeSimbol, coordSimbolX, coordSimbolY;
     private static boolean nextStepIsX;
+    private static boolean tie;//Nem ebbe az osztalyba kene
 
     static void drawSimbol(Graphics g2, int x, int y) {
+        tie = false;//Nem ebbe az osztalyba kene
         Graphics2D g = (Graphics2D) g2;
         g.setStroke(new BasicStroke(3));
         byte center = (byte) ((b.getSizeSquareX() - sizeSimbol) >> 1);
@@ -33,17 +36,24 @@ public class Simbol {
 
         //Idaig tartozik a Simbol osztalyra, innentol egy masik osztaly kene hogy csinalja
         b.setFields(b.getRows(), b.getColumns(), currentSimbol);
-        b.getEmptyFields().remove("" + ((b.getNumberLines() * b.getRows() + b.getColumns())));
+        b.getEmptyFields().remove("" + (((b.getNumberLines() + 8) * b.getRows() + b.getColumns())));
         nextStepIsX = !nextStepIsX;
         b.increaseNumberSteps();
-//        Printer.printArray(b.getFields());
-//        Printer.printList(b.getEmptyFields());
         if (b.getNumberSteps() > (b.getNumberLines() < 9 ? TicTacToeMinSteps.getValue() : GomokuMinSteps.getValue())) {
             WinCheck.winCheck();
         }
-        if (b.getEmptyFields().isEmpty()) {
-            System.out.println("___Dontetlen___");
+        tie = b.getEmptyFields().isEmpty() && !WinCheck.getWin();
+        if (tie) {
+            new Windows(new JRootPane(), true, Literals.Tie);
         }
+    }
+
+    static boolean isTie() {//Nem ebbe az osztalyba kene
+        return tie;
+    }
+
+    static void setTie(boolean t) {//Nem ebbe az osztalyba kene
+        tie = t;
     }
 
     static void setCurrentSimbol(byte c) {

@@ -38,7 +38,7 @@ public class AI {
         horizontal = true;
         for (byte a = 0; a < fields.length; a++) {
             for (byte c = 0; c < fields.length; c++) {
-                if ((a == 0 && c == 0) || fields[a][c] != getCurrentSimbol()) {
+                if (fields[a][c] != getCurrentSimbol()) {
                     continue;
                 }
                 if (c - 1 < 0) {
@@ -93,7 +93,7 @@ public class AI {
     private static void randomStep() {
         Random rn = new Random();
         int a = Integer.parseInt(b.getEmptyFields().get(rn.nextInt(b.getEmptyFields().size())));
-        rows = (byte) (a / nL);
-        columns = (byte) (a % nL);
+        rows = (byte) (a / (nL + 8));
+        columns = (byte) (a % (nL + 8));
     }
 }

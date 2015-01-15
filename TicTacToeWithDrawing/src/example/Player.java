@@ -7,6 +7,7 @@ public class Player {
 
     private String name;
     private String text;
+    private String level;
     private String message;
     private int points;
     private short time;
@@ -27,6 +28,14 @@ public class Player {
         simbol = si;
     }
 
+    void increasePoints() {
+        points++;
+    }
+
+    void increasePoints(byte p) {
+        points += p;
+    }
+
     String getName() {
         return name;
     }
@@ -41,6 +50,14 @@ public class Player {
 
     void setText(String t) {
         text = t;
+    }
+
+    String getLevel() {
+        return level;
+    }
+
+    void setLevel(String l) {
+        level = l;
     }
 
     String getMessage() {

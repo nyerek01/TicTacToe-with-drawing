@@ -1,78 +1,158 @@
 package example;
 
 import static example.Literals.Win;
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 enum Literals {
 
-    Win, Help, About, Custom, Options, CheckUpdates;
+    Win, Lose, Tie, Help, About, Custom, Options, CheckUpdates;
 }
 
 public class Windows extends JDialog implements ActionListener, KeyListener, Interface {
 
-    JButton btOk, btCancel;
-    JLabel lbtext;
+    JButton btOK, btCancel;
+    JLabel lbText, lbRows, lbCols, lbLevel;
+    JTextField tfRows, tfCols, tfLevel;
+    Literals li;
 
     Windows(JRootPane tulajdonos, boolean modal, Literals l) {
 
-        btOk = new JButton("Ok");
+        li = l;
+
+        btOK = new JButton("OK");
         btCancel = new JButton("Cancel");
-        lbtext = new JLabel(l.name());
+
+        btOK.addActionListener(this);
+        btCancel.addActionListener(this);
+
+        lbText = new JLabel();
+        lbRows = new JLabel("rows: ");
+        lbCols = new JLabel("cols: ");
+        lbLevel = new JLabel("level: ");
+
+        tfRows = new JTextField();
+        tfCols = new JTextField();
+        tfLevel = new JTextField();
+
+        pn0.removeAll();
+        pn1.removeAll();
+
         whichWindow(l);
-//        add(lbtext);//Kell panel, elrendezes manager stb....
-//        add(btOk);
-        add(btCancel);
+
+        add(pn0, BorderLayout.PAGE_START);
+
         setResizable(false);
         setTitle(l.name());
         setVisible(true);
     }
 
-    void whichWindow(Literals l) {
+    private void whichWindow(Literals l) {
         switch (l) {
             case Win:
                 setBounds(150, 150, 200, 200);
                 System.out.println("Win");
+                lbText.setText(win);
+                pn0.add(lbText);
+                btOK.setText("Igen");
+                btCancel.setText("Nem");
+                pn1.add(btOK);
+                pn1.add(btCancel);
+                add(pn1, BorderLayout.PAGE_END);
+                break;
+            case Lose:
+                setBounds(150, 150, 200, 200);
+                System.out.println("Lose");
+                lbText.setText(lose);
+                pn0.add(lbText);
+                btOK.setText("Igen");
+                btCancel.setText("Nem");
+                pn1.add(btOK);
+                pn1.add(btCancel);
+                add(pn1, BorderLayout.PAGE_END);
+                break;
+            case Tie:
+                setBounds(150, 150, 200, 200);
+                System.out.println("Tie");
+                lbText.setText(tie);
+                pn0.add(lbText);
+                btOK.setText("Igen");
+                btCancel.setText("Nem");
+                pn1.add(btOK);
+                pn1.add(btCancel);
+                add(pn1, BorderLayout.PAGE_END);
                 break;
             case Help:
                 setBounds(150, 150, 200, 200);
                 System.out.println("Help");
-                lbtext.setText(help);
-                lbtext.setAutoscrolls(true);
+                lbText.setText(help);
+                lbText.setAutoscrolls(true);
+                pn0.add(lbText);
+                pn0.add(btOK);
 
                 break;
             case About:
                 setBounds(150, 150, 200, 200);
                 System.out.println("About");
-                lbtext.setText(about);
+                lbText.setText(about);
+                pn0.add(lbText);
+                pn0.add(btOK);
                 break;
             case Custom:
-                setBounds(150, 150, 200, 200);
+                setBounds(150, 150, 175, 150);
                 System.out.println("Custom");
+                setLayout(new GridLayout(0, 2));
+                add(lbRows);
+                add(tfRows);
+                add(lbCols);
+                add(tfCols);
+                add(lbLevel);
+                add(tfLevel);
+                add(btOK);
+                add(btCancel);
                 break;
             case Options:
                 setBounds(150, 150, 200, 200);
                 System.out.println("Options");
+                lbText.setText(options);
+                pn0.add(lbText);
+                pn1.add(btOK);
+                add(pn1, BorderLayout.PAGE_END);
                 break;
             case CheckUpdates:
                 setBounds(150, 150, 200, 200);
                 System.out.println("CheckUpdates");
+                lbText.setText(checkUpdates);
+                pn0.add(lbText);
+                pn1.add(btOK);
+                add(pn1, BorderLayout.AFTER_LAST_LINE);
                 break;
             default:
-                throw new AssertionError();
+                setBounds(150, 150, 200, 200);
+                System.out.println("Default Window");
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btOk) {
-            System.out.println("btOk");
-        } else if (e.getSource() == btCancel) {
-            System.out.println("btCancel");
-        } else if (e.getSource() == btOk) {
-            System.out.println("btOk");
-        } else if (e.getSource() == btCancel) {
-            System.out.println("btCancel");
+        if (e.getSource() == btOK && li == Literals.Custom) {
+            byte r, c;
+            String l;
+            r = Byte.parseByte(tfRows.getText());
+            c = Byte.parseByte(tfCols.getText());
+            l = tfLevel.getText();
+            System.out.println("NewGame, r = " + r + ", c = " + c);
+            if (r > 2 && c > 2 && r < 25 && c < 25) {//min. 3x3-as legyen, max. sajat dontes
+                Game.comp.setLevel(l);
+                Game.g.newGame(r, c);
+                dispose();
+            }
+        } else if (e.getSource() == btOK && (li == Literals.Win || li == Literals.Lose || li == Literals.Tie)) {
+            Game.g.newGame(Game.b.getNumberLines());
+            dispose();
+        } else {
+            dispose();
         }
     }
 

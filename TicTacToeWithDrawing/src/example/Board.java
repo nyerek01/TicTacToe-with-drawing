@@ -71,7 +71,8 @@ public class Board implements Interface {
     }
 
     boolean isEnabled(int a, int b) {
-        return fields[a + 4][b + 4] == 0;
+//        return fields[a + 4][b + 4] == 0;
+        return fields[a][b] == 0;
     }
 
     byte[][] getFields() {
@@ -83,7 +84,8 @@ public class Board implements Interface {
     }
 
     void setFields(byte r, byte c, byte v) {
-        fields[r + 4][c + 4] = v;
+//        fields[r + 4][c + 4] = v;
+        fields[r][c] = v;
     }
 
     short getDrawAreaX() {

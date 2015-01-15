@@ -38,7 +38,8 @@ public class InitVar implements Interface {
             for (byte j = 0; j < nLP8; j++) {
                 tempFields[i][j] = 0;//0 ures, 1 X, 2 O
                 if (i < nL && j < nL) {
-                    tempEmpty.add(nL * i + j, "" + (nL * i + j));//Elejen az osszes mezo ures, majd lepesenkent csokken a szamuk
+//                if (i > 3 && j > 3 && i < nL + 4 && j < nL + 4) {
+                    tempEmpty.add(nL * i + j, "" + (nLP8 * (i + 4) + j + 4));//Elejen az osszes mezo ures, majd lepesenkent csokken a szamuk
                 }
             }
         }

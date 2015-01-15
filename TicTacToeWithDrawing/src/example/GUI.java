@@ -98,6 +98,10 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
         timer.restart();
     }
 
+    private void varInit(byte r, byte c) {
+
+    }
+
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getY() > coordLineY) {
@@ -107,10 +111,10 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
 
             b.setColumns(Converter.conPixToCol(e.getX()));
             Simbol.setCoordSimbolX(Converter.conColToPix(b.getColumns()));
-            System.out.println("row = " + b.getRows() + ", col = " + b.getColumns());
+//            System.out.println("row = " + b.getRows() + ", col = " + b.getColumns());
             if (b.isEnabled(b.getRows(), b.getColumns())) {
                 Simbol.drawSimbol(graphics, Simbol.getCoordSimbolX(), Simbol.getCoordSimbolY());
-                if (!getWin()) {
+                if (!getWin() && !Simbol.isTie()) {
                     AI.stepAI();
                 }
             }
@@ -155,8 +159,20 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
     }
 
     void newGame(byte a) {
-        b.setNumberLines(a);
-        varInit(a);
+        newGame(a, a);
+//        b.setNumberLines(a);
+//        varInit(a);
+//        setTitle("0:00");
+//        update(graphics);
+//        b.drawBoard();
+    }
+
+    void newGame(byte r, byte c) {
+        b.setRows(r);
+        b.setColumns(c);
+        b.setNumberLines(r);
+        varInit(r);
+//        varInit(r, c);
         setTitle("0:00");
         update(graphics);
         b.drawBoard();
