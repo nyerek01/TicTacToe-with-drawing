@@ -105,15 +105,14 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getY() > coordLineY) {
-
             b.setRows(Converter.conPixToRow(e.getY()));
             Simbol.setCoordSimbolY(Converter.conRowToPix(b.getRows()));
 
             b.setColumns(Converter.conPixToCol(e.getX()));
             Simbol.setCoordSimbolX(Converter.conColToPix(b.getColumns()));
-//            System.out.println("row = " + b.getRows() + ", col = " + b.getColumns());
             if (b.isEnabled(b.getRows(), b.getColumns())) {
-                Simbol.drawSimbol(graphics, Simbol.getCoordSimbolX(), Simbol.getCoordSimbolY());
+                human.getSteps().add(0, "" + ((b.getNumberLines() + 7) * b.getRows() + b.getColumns()));
+                Simbol.drawSimbolPixel(graphics, Simbol.getCoordSimbolX(), Simbol.getCoordSimbolY());
                 if (!getWin() && !Simbol.isTie()) {
                     AI.stepAI();
                 }
@@ -133,7 +132,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
             } else if (e.getSource() == miTicTacToe) {
                 newGame((byte) 3);
             } else if (e.getSource() == miGomoku) {
-                newGame((byte) 14);
+                newGame((byte) 15);
             } else if (e.getSource() == miUnDo) {
                 //emptyFields.remove();
             } else if (e.getSource() == miCustom) {
@@ -160,11 +159,6 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
 
     void newGame(byte a) {
         newGame(a, a);
-//        b.setNumberLines(a);
-//        varInit(a);
-//        setTitle("0:00");
-//        update(graphics);
-//        b.drawBoard();
     }
 
     void newGame(byte r, byte c) {
@@ -172,7 +166,6 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
         b.setColumns(c);
         b.setNumberLines(r);
         varInit(r);
-//        varInit(r, c);
         setTitle("0:00");
         update(graphics);
         b.drawBoard();

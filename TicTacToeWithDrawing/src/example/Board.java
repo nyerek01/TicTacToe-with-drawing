@@ -13,7 +13,7 @@ public class Board implements Interface {
     private ArrayList<String> emptyFields;
 
     Board() {
-        numberLines = 5;
+        numberLines = 9;
         fields = new byte[numberLines][numberLines];
     }
 

@@ -17,13 +17,16 @@ public class Player {
     private ArrayList<String> steps;
 
     Player() {
+        steps = new ArrayList<>();
     }
 
     Player(String n) {
+        steps = new ArrayList<>();
         name = n;
     }
 
     Player(String s, Simbols si) {
+        steps = new ArrayList<>();
         name = s;
         simbol = si;
     }

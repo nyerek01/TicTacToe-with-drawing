@@ -36,10 +36,12 @@ public class InitVar implements Interface {
 
         for (byte i = 0; i < nLP8; i++) {
             for (byte j = 0; j < nLP8; j++) {
-                tempFields[i][j] = 0;//0 ures, 1 X, 2 O
+                tempFields[i][j] = -1;//Ezekre a mezokre nem lehet lepni, azert vannak hogy ne legyen tulindexeles
                 if (i < nL && j < nL) {
-//                if (i > 3 && j > 3 && i < nL + 4 && j < nL + 4) {
                     tempEmpty.add(nL * i + j, "" + (nLP8 * (i + 4) + j + 4));//Elejen az osszes mezo ures, majd lepesenkent csokken a szamuk
+                }
+                if (i > 3 && j > 3 && i < nL + 4 && j < nL + 4) {
+                    tempFields[i][j] = 0;//A megjeleno jatekter, ezek az elerheto mezok az ervenyes lepeshez
                 }
             }
         }

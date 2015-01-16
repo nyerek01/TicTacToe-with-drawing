@@ -51,12 +51,12 @@ public class Windows extends JDialog implements ActionListener, KeyListener, Int
     private void whichWindow(Literals l) {
         switch (l) {
             case Win:
-                setBounds(150, 150, 200, 200);
+                setBounds(150, 150, 200, 200);//actual window center
                 System.out.println("Win");
                 lbText.setText(win);
                 pn0.add(lbText);
-                btOK.setText("Igen");
-                btCancel.setText("Nem");
+                btOK.setText("Yes");
+                btCancel.setText("No");
                 pn1.add(btOK);
                 pn1.add(btCancel);
                 add(pn1, BorderLayout.PAGE_END);
@@ -66,8 +66,8 @@ public class Windows extends JDialog implements ActionListener, KeyListener, Int
                 System.out.println("Lose");
                 lbText.setText(lose);
                 pn0.add(lbText);
-                btOK.setText("Igen");
-                btCancel.setText("Nem");
+                btOK.setText("Yes");
+                btCancel.setText("No");
                 pn1.add(btOK);
                 pn1.add(btCancel);
                 add(pn1, BorderLayout.PAGE_END);
@@ -77,8 +77,8 @@ public class Windows extends JDialog implements ActionListener, KeyListener, Int
                 System.out.println("Tie");
                 lbText.setText(tie);
                 pn0.add(lbText);
-                btOK.setText("Igen");
-                btCancel.setText("Nem");
+                btOK.setText("Yes");
+                btCancel.setText("No");
                 pn1.add(btOK);
                 pn1.add(btCancel);
                 add(pn1, BorderLayout.PAGE_END);
@@ -143,7 +143,7 @@ public class Windows extends JDialog implements ActionListener, KeyListener, Int
             c = Byte.parseByte(tfCols.getText());
             l = tfLevel.getText();
             System.out.println("NewGame, r = " + r + ", c = " + c);
-            if (r > 2 && c > 2 && r < 25 && c < 25) {//min. 3x3-as legyen, max. sajat dontes
+            if (r > 2 && c > 2 && r < 35 && c < 35) {//min. 3x3-as legyen, max. sajat dontes
                 Game.comp.setLevel(l);
                 Game.g.newGame(r, c);
                 dispose();
