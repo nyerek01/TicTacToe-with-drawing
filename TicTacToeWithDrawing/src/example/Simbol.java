@@ -4,7 +4,6 @@ import static example.Game.*;
 import static example.MinSteps.*;
 
 import java.awt.*;
-import javax.swing.*;
 
 public class Simbol {
 
@@ -17,14 +16,14 @@ public class Simbol {
 //        drawSimbolPixel(g2, Converter.conRowToPix(r), Converter.conColToPix(c));
 //    }
     static void drawSimbolPixel(Graphics g2, int x, int y) {
-        tie = false;//Nem ebbe az osztalyba kene
+        tie = false;
         Graphics2D g = (Graphics2D) g2;
         g.setStroke(new BasicStroke(3));
-        byte center = (byte) ((b.getSizeSquareX() - sizeSimbol) >> 1);
-        if (nextStepIsX) {
+        byte center = (byte) ((b.getSizeSquareX() - sizeSimbol) >> 1);//Osztas kettovel, jobbra tolja a biteket 1 helyiertekkel
+        if (nextStepIsX) {//Voros Kor kirajzolasa
             g.setColor(Color.RED);
             g.drawOval(x + center, y + center, sizeSimbol, sizeSimbol);
-        } else {
+        } else {//Fekete X
             g.setColor(Color.BLACK);
             g.drawLine(x + center, y + center, x + center + sizeSimbol, y + center + sizeSimbol);
             g.drawLine(x + center + sizeSimbol, y + center, x + center, y + center + sizeSimbol);
@@ -41,19 +40,19 @@ public class Simbol {
         nextStepIsX = !nextStepIsX;
         b.increaseNumberSteps();
         if (b.getNumberSteps() > (b.getNumberLines() < 9 ? TicTacToeMinSteps.getValue() : GomokuMinSteps.getValue())) {
-            WinCheck.winCheck();
+            WinCheck.winCheck();//Csak akkor ellenorzunk ha van ertelme
         }
-        tie = b.getEmptyFields().isEmpty() && !WinCheck.getWin();
+        tie = b.getEmptyFields().isEmpty() && !WinCheck.getWin();//Dontetlen ha nincs mar szabad mezo, mindenhova leptek mar es nem nyert valaki
         if (tie) {
-            new Windows(new JRootPane(), true, Literals.Tie);
+            WinCheck.tie();
         }
     }
 
-    static boolean isTie() {//Nem ebbe az osztalyba kene
+    static boolean isTie() {
         return tie;
     }
 
-    static void setTie(boolean t) {//Nem ebbe az osztalyba kene
+    static void setTie(boolean t) {
         tie = t;
     }
 

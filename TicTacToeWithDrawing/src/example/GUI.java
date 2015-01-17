@@ -1,11 +1,3 @@
-        /*      GOMOKU
-
- Aktualis allas szamontartasa, pl.: 3-1, az eredmenyhez tartozo pont(ozasi)rendszer kidolgosasa.
- Perzisztens adattarolas (XML).
- A gepnek legyen valaszthato tudasszintje, akar randomtol kezdve a tokeletes strategia megvalositasaig.
- Lehessen valasztani szimbolumot (X,O, stb.), kezdolepest, legyen lehetoseg lepes visszavonasara.
- Tudjon egymas ellen jatszani gep-gep, ember-ember, es ember-gep.
- */
 package example;
 
 import static example.Menu.*;
@@ -18,6 +10,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class GUI extends JFrame implements ActionListener, MouseListener, Interface {
+//Sok minden van ebbe az osztalyban ami nem ide tartozik, masik osztaly felelosege, feladata lenne
 
     private static Timer timer, t;
     private static short coordLineX, coordLineY;
@@ -40,7 +33,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
 
         varInit(b.getNumberLines());
 
-        setLocation((screenWidth - windowWidth) >> 1, (screenHeight - windowHeight) >> 1);
+        setLocation((screenWidth - windowWidth) >> 1, (screenHeight - windowHeight) >> 1);//Ablak kozepre
         setSize(windowWidth, windowHeight);
         graphics = (Graphics2D) getGraphics();
     }
@@ -85,7 +78,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
         coordLineX = left;
         coordLineY = (short) (top + menuHeight);
 
-        if ((windowHeight - top - bottom - menuHeight) != (windowWidth - left - right)) {
+        if ((windowHeight - top - bottom - menuHeight) != (windowWidth - left - right)) {//Szimmetrikus legyen, magassag=szelesseg
             windowWidth = (short) (windowHeight - top - bottom - menuHeight + left + right);
         }
 
@@ -93,27 +86,29 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
         b.setDrawAreaY((short) (windowHeight - top - bottom - menuHeight));
 
         t = new Timer(1000, this);
-        timer = new Timer(75, this);
+        timer = new Timer(75, this);//Tabla kirajzolasanak kesletetese, kulonben nem jelenik meg
         t.restart();
         timer.restart();
     }
 
-    private void varInit(byte r, byte c) {
+    private void varInit(byte r, byte c) {//Jelenleg a sorok szama meg kell hogy egyezzen az oszlopok szamaval, de ha kulonbozo is lehetne, akkor lenne hasznalva ez az eljaras
 
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (e.getY() > coordLineY) {
+        if (e.getY() > coordLineY) {//Menure kattintast nem vesszuk figyelembe
+
             b.setRows(Converter.conPixToRow(e.getY()));
             Simbol.setCoordSimbolY(Converter.conRowToPix(b.getRows()));
 
             b.setColumns(Converter.conPixToCol(e.getX()));
             Simbol.setCoordSimbolX(Converter.conColToPix(b.getColumns()));
+
             if (b.isEnabled(b.getRows(), b.getColumns())) {
-                human.getSteps().add(0, "" + ((b.getNumberLines() + 7) * b.getRows() + b.getColumns()));
+                human.getSteps().add(0, "" + ((b.getNumberLines() + 7) * b.getRows() + b.getColumns()));//Lepesek listajanak novelese
                 Simbol.drawSimbolPixel(graphics, Simbol.getCoordSimbolX(), Simbol.getCoordSimbolY());
-                if (!getWin() && !Simbol.isTie()) {
+                if (!getWin() && !Simbol.isTie()) {//Ha meg nincs vege a jateknak, akkor lepjen a gep
                     AI.stepAI();
                 }
             }
@@ -126,6 +121,17 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
             setTitle(title + " " + min + ":" + (sec < 10 ? "0" : "") + sec);
             sec = (sec < 59 ? ++sec : 0);
             min = (sec != 0 ? min : ++min);
+            if (Simbol.isX()) {
+                comp.decreaseTime();
+                if (comp.getTime() < 1) {
+                    WinCheck.win();
+                }
+            } else {
+                human.decreaseTime();
+                if (human.getTime() < 1) {
+                    WinCheck.lose();//Out of Time
+                }
+            }
         } else if (e.getSource() != timer) {
             if (e.getSource() == miReStart) {
                 newGame(b.getNumberLines());
@@ -134,24 +140,30 @@ public class GUI extends JFrame implements ActionListener, MouseListener, Interf
             } else if (e.getSource() == miGomoku) {
                 newGame((byte) 15);
             } else if (e.getSource() == miUnDo) {
-                //emptyFields.remove();
+                //emptyFields.add();
             } else if (e.getSource() == miCustom) {
                 new Windows(new JRootPane(), true, Literals.Custom);
             } else if (e.getSource() == miOptions) {
                 new Windows(new JRootPane(), true, Literals.Options);
             } else if (e.getSource() == miSave) {
-                //Serialization objects
-            } else if (e.getSource() == miHelp) {
+                x.fileName();
+                x.createXML(path + x.getS() + ext);
+            } //            else if (e.getSource() == miLoad) {
+            //                loadXML();
+            //            }
+            else if (e.getSource() == miHelp) {
                 new Windows(new JRootPane(), true, Literals.Help);
             } else if (e.getSource() == miCheckUpdates) {
                 new Windows(new JRootPane(), true, Literals.CheckUpdates);
             } else if (e.getSource() == miAbout) {
                 new Windows(new JRootPane(), true, Literals.About);
             } else if (e.getSource() == miExit) {
+                x.fileName();
+                x.createXML(path + x.getS() + ext);
                 System.exit(3);
             }
         } else {
-            b.drawBoard();
+            b.drawBoard();//Tabla kirajzolasa, konstruktorbol hivva nem mukodik
             timer.stop();
 
         }

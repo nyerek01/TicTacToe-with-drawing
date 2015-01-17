@@ -25,15 +25,15 @@ public class Board implements Interface {
     void drawBoard() {
         sizeSquareX = (short) (drawAreaX / numberLines);
         sizeSquareY = (short) (drawAreaY / numberLines);
-        setSizeSimbol((short) (sizeSquareX * perCent));
+        setSizeSimbol((short) (sizeSquareX * perCent));//Kitoltesi tenyezo. A negyzet meretenek hany szazaleka legyen a simbolum
 
         Graphics2D g2 = GUI.getGraphic();
 
-        g2.setStroke(new BasicStroke(1));
+        g2.setStroke(new BasicStroke(1));//Vonal vastagsaganak beallitasa
         g2.setColor(Color.BLACK);
 
         short yStart = getCoordLineY();
-        short yStop = (short) (getWindowHeight() - getBottom());
+        short yStop = (short) (getWindowHeight() - getBottom());//Cikluson kivul szamolva optimalisabb
 
         for (byte i = 1; i < numberLines; i++) {
             setCoordLineX((short) (getCoordLineX() + sizeSquareX));
@@ -71,7 +71,6 @@ public class Board implements Interface {
     }
 
     boolean isEnabled(int a, int b) {
-//        return fields[a + 4][b + 4] == 0;
         return fields[a][b] == 0;
     }
 
@@ -84,7 +83,6 @@ public class Board implements Interface {
     }
 
     void setFields(byte r, byte c, byte v) {
-//        fields[r + 4][c + 4] = v;
         fields[r][c] = v;
     }
 

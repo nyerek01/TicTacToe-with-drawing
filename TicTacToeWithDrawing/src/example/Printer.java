@@ -17,4 +17,12 @@ public class Printer {
     static void printList(ArrayList<String> f) {
         f.forEach(e -> System.out.print(e + ", "));//Java 8
     }
+
+    static String getList(ArrayList<String> f) {
+        String s = "";
+        for (String f1 : f) {
+            s += f1 + ", ";
+        }
+        return s;
+    }
 }

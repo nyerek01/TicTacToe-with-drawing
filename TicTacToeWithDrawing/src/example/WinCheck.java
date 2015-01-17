@@ -12,9 +12,7 @@ public class WinCheck {
     static void winCheck() {
         win = false;
         fields = b.getFields();
-        byte row = b.getRows();
-        byte col = b.getColumns();
-        for (int a = 4; a < b.getNumberLines() + 4 && !win; a++) {
+        for (int a = 4; a < b.getNumberLines() + 4 && !win; a++) {//Vegig megy az egesz jatekmezon, nem lenne szukseges
             for (int c = 4; c < b.getNumberLines() + 4 && !win; c++) {
                 if (fields[a][c] != getCurrentSimbol()) {
                     continue;
@@ -47,16 +45,68 @@ public class WinCheck {
             }
         }
         if (win) {
-            if (Game.human.getSimbol() == Simbols.X) {//Ez nem a WinCheck osztaly feladata lenne, masik osztalyba kene
-                Game.human.increasePoints();
-            } else if (Game.comp.getSimbol() == Simbols.O) {//A feltetel nem is jo, javitani kene. Nem csak O-val lehet
-                Game.comp.increasePoints();
-            }
-            if (isX()) {//Nem biztos hogy helyes a vizsgalat, a fuggveny csak azt adja vissza hogy X lepett
-                new Windows(new JRootPane(), true, Literals.Win);
+            if (isX()) {
+                win();
             } else {
-                new Windows(new JRootPane(), true, Literals.Lose);
+                lose();
             }
+        }
+    }
+
+    static void win() {
+        Game.human.increaseNumberOfWins();
+        Game.comp.increaseNumberOfLoses();
+
+        Game.human.increasePoints();
+        checkLevel(Game.human);
+        Game.comp.increasePoints((byte) -1);
+        checkLevel(Game.comp);
+        new Windows(new JRootPane(), true, Literals.Win);
+        GUI.getT().stop();
+        b.getEmptyFields().clear();
+    }
+
+    static void lose() {
+        Game.human.increaseNumberOfLoses();
+        Game.comp.increaseNumberOfWins();
+
+        Game.human.increasePoints((byte) -1);
+        checkLevel(Game.human);
+        Game.comp.increasePoints();
+        checkLevel(Game.comp);
+        new Windows(new JRootPane(), true, Literals.Lose);
+        GUI.getT().stop();
+        b.getEmptyFields().clear();
+    }
+
+    static void tie() {
+        Game.human.increaseNumberOfTies();
+        Game.comp.increaseNumberOfTies();
+
+        Game.human.increasePoints((byte) -1);
+        checkLevel(Game.human);
+        Game.comp.increasePoints();
+        checkLevel(Game.comp);
+        new Windows(new JRootPane(), true, Literals.Tie);
+        GUI.getT().stop();
+        b.getEmptyFields().clear();
+    }
+
+    static void checkLevel(Player p) {
+        if (p.getPoints() < 50) {
+            p.setLevel("Noob");
+        } else if (p.getPoints() < 150) {
+            p.setLevel("Beginner");
+        } else if (p.getPoints() < 250) {
+            p.setLevel("Normal");
+        } else if (p.getPoints() < 350) {
+            p.setLevel("Expert");
+        } else if (p.getPoints() < 500) {
+            p.setLevel("Pro");
+        } else if (p.getPoints() < 1000) {
+            p.setLevel("Master");
+        } else {
+
         }
     }
 

@@ -4,21 +4,19 @@ import static example.Game.b;
 
 public class Converter {
 
-    static byte conPixToRow(int y) {//convertYPixelToRow
-//        return (byte) ((y - GUI.getCoordLineY()) / b.getSizeSquareY());
+    static byte conPixToRow(int y) {//convertYPixelsToRows
         return (byte) ((y - GUI.getCoordLineY()) / b.getSizeSquareY() + 4);
     }
 
-    static byte conPixToCol(int x) {//convertXPixelToColumn
-//        return (byte) ((x - GUI.getCoordLineX()) / b.getSizeSquareX());
+    static byte conPixToCol(int x) {//convertXPixelsToColumns
         return (byte) ((x - GUI.getCoordLineX()) / b.getSizeSquareX() + 4);
     }
 
-    static short conRowToPix(byte r) {//convertRowToPixel
+    static short conRowToPix(byte r) {//convertRowsToPixels
         return (short) ((r - 4) * b.getSizeSquareY() + GUI.getCoordLineY());
     }
 
-    static short conColToPix(byte c) {//convertColumnToPixel
+    static short conColToPix(byte c) {//convertColumnsToPixels
         return (short) ((c - 4) * b.getSizeSquareX() + GUI.getCoordLineX());
     }
 }

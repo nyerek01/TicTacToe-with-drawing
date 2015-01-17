@@ -14,16 +14,13 @@ public class AI {
     private static boolean logicalStep;
 
     static void stepAI() {
+
         nL = b.getNumberLines();
         rows = b.getRows();
         columns = b.getColumns();
         fields = b.getFields();
         logicalStep = true;
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
+
         logicalStep();
         if (logicalStep) {
             randomStep();
@@ -36,7 +33,7 @@ public class AI {
 
         if (b.isEnabled(rows, columns)) {//Ha jo lenne a logikai lepes ez az if nem kene
             drawSimbolPixel(getGraphic(), getCoordSimbolX(), getCoordSimbolY());
-//            drawSimbolRowCol(getGraphic(), rows, columns);
+//            drawSimbolRowCol(getGraphic(), rows, columns);//Sorral, oszloppal nem lehet meghivni
             comp.getSteps().add(0, "" + ((nL + 7) * rows + columns));
         } else {
             randomStep();//Ha a logikai lepes garantalna a jo lepest, akkor ez nem kene
@@ -54,7 +51,7 @@ public class AI {
 
             for (byte a = -2; a < 3 && logicalStep; a++) {
                 for (byte c = -2; c < 3 && logicalStep; c++) {
-                    if (fields[a + rows][c + columns] != getCurrentSimbol() || (a == 0 && c == 0)) {
+                    if (fields[a + rows][c + columns] != getCurrentSimbol() || (a == 0 && c == 0)) {//Azokat a mezokat nezzuk, ahol olyan szimbolum van mint a mienk
                         continue;
                     }
                     if (a == 0) {//Horizontal
@@ -92,7 +89,7 @@ public class AI {
                     }
                 }
             }
-        } else {
+        } else {//TicTacToe-nal erdemes kozepre rakni
             rows = 5;
             columns = 5;
             logicalStep = false;
@@ -102,6 +99,7 @@ public class AI {
     private static void randomStep() {
         Random rn = new Random();
         int a = Integer.parseInt(b.getEmptyFields().get(rn.nextInt(b.getEmptyFields().size())));
+        //Garantaltan ervenyes lepest ad, elsore. Nem kell ciklus
         rows = (byte) (a / (nL + 8));
         columns = (byte) (a % (nL + 8));
     }

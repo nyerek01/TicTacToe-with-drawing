@@ -7,7 +7,7 @@ import java.util.*;
 
 public class InitVar implements Interface {
 
-    static void initVar(byte n) {
+    static void initVar(byte n) {//Valtozok alaphelyzetbe allitasa
 
         setSec(0);
         setMin(0);
@@ -20,6 +20,10 @@ public class InitVar implements Interface {
         setWindowHeight(600);
         setScreenWidth(sizeScreen.width);
         setScreenHeight(sizeScreen.height);
+        human.setTime((short) (n * n));//Kb. annyi ido van masodpercben mint ahany mezo, tehat 1 lepes 1 sec
+        comp.setTime((short) (n * n));
+        human.increaseNumberOfGames();//Az elkezdett jateknal mar novelve van, attol fuggetlenul hogy nem fejezi be, vagy egybol kilep
+        comp.increaseNumberOfGames();
 
         b.setNumberLines(n);
         setNextStepIsX(false);
