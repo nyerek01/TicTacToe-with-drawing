@@ -12,12 +12,13 @@ public class WinCheck {
     static void winCheck() {
         win = false;
         fields = b.getFields();
-        for (int a = 4; a < b.getNumberLines() + 4; a++) {
-            for (int c = 4; c < b.getNumberLines() + 4; c++) {
+        byte row = b.getRows();
+        byte col = b.getColumns();
+        for (int a = 4; a < b.getNumberLines() + 4 && !win; a++) {
+            for (int c = 4; c < b.getNumberLines() + 4 && !win; c++) {
                 if (fields[a][c] != getCurrentSimbol()) {
                     continue;
                 }
-//                Printer.printArray(fields);
                 if (b.getNumberLines() == 3) {
                     if (fields[a][c + 1] == fields[a][c] && fields[a][c - 1] == fields[a][c]) {//Horizontal
                         win = true;
@@ -48,11 +49,10 @@ public class WinCheck {
         if (win) {
             if (Game.human.getSimbol() == Simbols.X) {//Ez nem a WinCheck osztaly feladata lenne, masik osztalyba kene
                 Game.human.increasePoints();
-            } else if (Game.comp.getSimbol() == Simbols.O) {//A feltetel nem is jo, javitani kene
+            } else if (Game.comp.getSimbol() == Simbols.O) {//A feltetel nem is jo, javitani kene. Nem csak O-val lehet
                 Game.comp.increasePoints();
             }
-            System.out.println((isX()) ? "X" : "O" + " win");
-            if (isX()) {//Nem biztos hogy helyes a vizsgalat
+            if (isX()) {//Nem biztos hogy helyes a vizsgalat, a fuggveny csak azt adja vissza hogy X lepett
                 new Windows(new JRootPane(), true, Literals.Win);
             } else {
                 new Windows(new JRootPane(), true, Literals.Lose);

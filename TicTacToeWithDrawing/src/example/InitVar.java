@@ -47,5 +47,7 @@ public class InitVar implements Interface {
         }
         b.setFields(tempFields);
         b.setEmptyFields(tempEmpty);
+        human.getSteps().clear();
+        comp.getSteps().clear();
     }
 }
